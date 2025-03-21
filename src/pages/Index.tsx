@@ -37,10 +37,29 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Slideshow section with heart background */}
+        {/* Slideshow section with animated heart background */}
         <section className="animate-slide-up relative">
-          <div className="absolute inset-0 flex items-center justify-center z-0 opacity-10">
-            <Heart className="text-olivia-purple w-full h-full max-w-md" fill="#F5A9DF" strokeWidth={1} />
+          <div className="absolute inset-0 flex items-center justify-center z-0">
+            <Heart 
+              className="text-olivia-purple w-full h-full max-w-md" 
+              fill="#F5A9DF" 
+              strokeWidth={1}
+              style={{
+                animation: "pulse 2s infinite alternate ease-in-out"
+              }}
+            />
+            <style jsx>{`
+              @keyframes pulse {
+                0% {
+                  transform: scale(1);
+                  opacity: 0.3;
+                }
+                100% {
+                  transform: scale(1.15);
+                  opacity: 0.5;
+                }
+              }
+            `}</style>
           </div>
           <div className="relative z-10">
             <Slideshow images={oliviaImages} interval={6000} />
@@ -71,14 +90,22 @@ const Index = () => {
           <cite className="block mt-4 text-muted-foreground not-italic">— Olivia Branchaud</cite>
         </section>
         
-        {/* Tribute link */}
+        {/* Tribute and game links */}
         <section className="text-center">
-          <Button asChild variant="link" className="text-olivia-purple">
-            <Link to="/tribute">
-              View Tribute
-              <Heart size={16} className="ml-2" />
-            </Link>
-          </Button>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button asChild variant="link" className="text-olivia-purple">
+              <Link to="/tribute">
+                View Tribute
+                <Heart size={16} className="ml-2" />
+              </Link>
+            </Button>
+            <Button asChild variant="link" className="text-olivia-purple">
+              <Link to="/game">
+                Play Educational Game
+                <GraduationCap size={16} className="ml-2" />
+              </Link>
+            </Button>
+          </div>
         </section>
       </div>
     </Layout>

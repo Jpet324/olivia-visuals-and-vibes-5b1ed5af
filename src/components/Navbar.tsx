@@ -51,6 +51,12 @@ const Navbar: React.FC = () => {
           <Link to="/gallery" className={isActive("/gallery") ? "nav-link-active" : "nav-link"}>
             Gallery
           </Link>
+          <Link to="/tribute" className={isActive("/tribute") ? "nav-link-active" : "nav-link"}>
+            Tribute
+          </Link>
+          <Link to="/game" className={isActive("/game") ? "nav-link-active" : "nav-link"}>
+            Game
+          </Link>
         </nav>
         
         {/* Mobile menu button */}
@@ -64,7 +70,7 @@ const Navbar: React.FC = () => {
       </div>
       
       {/* Mobile navigation */}
-      <div className={`md:hidden absolute w-full bg-white/95 backdrop-blur-md transition-all duration-300 ease-in-out overflow-hidden ${isMenuOpen ? "max-h-64 border-b border-olivia-purple/20" : "max-h-0"}`}>
+      <div className={`md:hidden absolute w-full bg-white/95 backdrop-blur-md transition-all duration-300 ease-in-out overflow-hidden ${isMenuOpen ? "max-h-96 border-b border-olivia-purple/20" : "max-h-0"}`}>
         <nav className="flex flex-col space-y-4 p-4">
           <Link to="/" className={`text-center py-2 ${isActive("/") ? "text-olivia-purple font-medium" : ""}`}>
             Home
@@ -77,6 +83,12 @@ const Navbar: React.FC = () => {
           </Link>
           <Link to="/gallery" className={`text-center py-2 ${isActive("/gallery") ? "text-olivia-purple font-medium" : ""}`}>
             Gallery
+          </Link>
+          <Link to="/tribute" className={`text-center py-2 ${isActive("/tribute") ? "text-olivia-purple font-medium" : ""}`}>
+            Tribute
+          </Link>
+          <Link to="/game" className={`text-center py-2 ${isActive("/game") ? "text-olivia-purple font-medium" : ""}`}>
+            Game
           </Link>
         </nav>
       </div>

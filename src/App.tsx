@@ -9,6 +9,7 @@ import About from "./pages/About";
 import Playlist from "./pages/Playlist";
 import Gallery from "./pages/Gallery";
 import Tribute from "./pages/Tribute";
+import Game from "./pages/Game";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/playlist" element={<Playlist />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/tribute" element={<Tribute />} />
+          <Route path="/game" element={<Game />} />
           <Route path="/music" element={<Navigate to="/music/index.html" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
