@@ -37,9 +37,14 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Slideshow section */}
-        <section className="animate-slide-up">
-          <Slideshow images={oliviaImages} interval={6000} />
+        {/* Slideshow section with heart background */}
+        <section className="animate-slide-up relative">
+          <div className="absolute inset-0 flex items-center justify-center z-0 opacity-10">
+            <Heart className="text-olivia-purple w-full h-full max-w-md" fill="#F5A9DF" strokeWidth={1} />
+          </div>
+          <div className="relative z-10">
+            <Slideshow images={oliviaImages} interval={6000} />
+          </div>
         </section>
         
         {/* Featured music section */}
@@ -64,6 +69,16 @@ const Index = () => {
             "The beauty of music is that it connects people. It carries a message, and we, the musicians, are the messengers."
           </blockquote>
           <cite className="block mt-4 text-muted-foreground not-italic">— Olivia Branchaud</cite>
+        </section>
+        
+        {/* Tribute link */}
+        <section className="text-center">
+          <Button asChild variant="link" className="text-olivia-purple">
+            <Link to="/tribute">
+              View Tribute
+              <Heart size={16} className="ml-2" />
+            </Link>
+          </Button>
         </section>
       </div>
     </Layout>

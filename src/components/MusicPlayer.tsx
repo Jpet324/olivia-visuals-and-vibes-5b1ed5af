@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 
 interface Track {
@@ -21,16 +21,63 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
   const currentTrack = tracks[currentTrackIndex];
+  
+  // Set up audio element when component mounts
+  useEffect(() => {
+    if (audioRef.current) {
+      // Handle metadata loaded to get duration
+      const handleLoadedMetadata = () => {
+        if (audioRef.current) {
+          setDuration(audioRef.current.duration);
+        }
+      };
+      
+      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+      
+      return () => {
+        if (audioRef.current) {
+          audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        }
+      };
+    }
+  }, []);
+  
+  // Handle track change
+  useEffect(() => {
+    if (audioRef.current) {
+      // Reset progress when track changes
+      setProgress(0);
+      
+      if (isPlaying) {
+        audioRef.current.load();
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.error("Playback failed:", error);
+            setIsPlaying(false);
+          });
+        }
+      }
+    }
+  }, [currentTrackIndex]);
   
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play();
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.error("Playback failed:", error);
+          });
+        }
       }
       setIsPlaying(!isPlaying);
     }
@@ -46,27 +93,17 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
   const handlePrevious = () => {
     const newIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
     setCurrentTrackIndex(newIndex);
-    if (isPlaying && audioRef.current) {
-      // We need to reload the audio with the new track and then play it
-      audioRef.current.load();
-      audioRef.current.play();
-    }
   };
   
   const handleNext = () => {
     const newIndex = (currentTrackIndex + 1) % tracks.length;
     setCurrentTrackIndex(newIndex);
-    if (isPlaying && audioRef.current) {
-      // We need to reload the audio with the new track and then play it
-      audioRef.current.load();
-      audioRef.current.play();
-    }
   };
   
   const updateProgress = () => {
     if (audioRef.current) {
       const { currentTime, duration } = audioRef.current;
-      if (duration) {
+      if (duration && isFinite(duration)) {
         setProgress((currentTime / duration) * 100);
       }
     }
@@ -75,13 +112,18 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current) {
       const newProgress = parseFloat(e.target.value);
-      const newTime = (audioRef.current.duration / 100) * newProgress;
-      audioRef.current.currentTime = newTime;
-      setProgress(newProgress);
+      if (audioRef.current.duration && isFinite(audioRef.current.duration)) {
+        const newTime = (audioRef.current.duration / 100) * newProgress;
+        if (isFinite(newTime)) {
+          audioRef.current.currentTime = newTime;
+          setProgress(newProgress);
+        }
+      }
     }
   };
   
   const formatTime = (seconds: number) => {
+    if (!isFinite(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -114,12 +156,10 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
               onChange={handleProgressChange}
               className="w-full h-1 bg-olivia-lightPurple rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-olivia-purple [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:shadow-black/10"
             />
-            {audioRef.current && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{formatTime(audioRef.current.currentTime)}</span>
-                <span>{formatTime(audioRef.current.duration || 0)}</span>
-              </div>
-            )}
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{formatTime(audioRef.current?.currentTime || 0)}</span>
+              <span>{formatTime(audioRef.current?.duration || 0)}</span>
+            </div>
           </div>
         </div>
         
@@ -164,9 +204,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
         ref={audioRef}
         onTimeUpdate={updateProgress}
         onEnded={handleNext}
-        src={currentTrack.audioSrc}
         preload="metadata"
-      />
+      >
+        <source src="https://cdn.pixabay.com/download/audio/2023/06/13/audio_21a41112e1.mp3?filename=cancion-triste-1502.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 };
