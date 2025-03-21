@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olivia's Music Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #9B87F5;
+            --secondary-color: #F5A9DF;
+            --accent-color: #D6BCFA;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3e7ff, #e5f1ff);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .music-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .music-list {
+            list-style: none;
+        }
+
+        .music-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        .music-item:last-child {
+            border-bottom: none;
+        }
+
+        .music-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .album-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+
+        .music-info {
+            flex-grow: 1;
+        }
+
+        .track-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .artist-album {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .download-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s, transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background-color: #7E69AB;
+            transform: translateY(-2px);
+        }
+
+        .player-section {
+            margin-top: 3rem;
+        }
+
+        .player-container {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .player-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        audio {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #7E69AB;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Olivia's Music Collection</h1>
+            <p class="subtitle">Download your favorite tracks</p>
+        </header>
+
+        <div class="music-container">
+            <ul class="music-list">
+                <li class="music-item">
+                    <img src="https://i.scdn.co/image/ab67616d0000b2732a038d3bf608c7f23b3fa5ee" alt="Album cover" class="album-cover">
+                    <div class="music-info">
+                        <p class="track-title">Stressed Out</p>
+                        <p class="artist-album">Twenty One Pilots • Blurryface</p>
+                    </div>
+                    <a href="stressed-out.mp3" download class="download-btn">Download</a>
+                </li>
+                <li class="music-item">
+                    <img src="https://i.scdn.co/image/ab67616d0000b273a20a78025be2d94e6c0824f3" alt="Album cover" class="album-cover">
+                    <div class="music-info">
+                        <p class="track-title">The Less I Know The Better</p>
+                        <p class="artist-album">Tame Impala • Currents</p>
+                    </div>
+                    <a href="the-less-i-know.mp3" download class="download-btn">Download</a>
+                </li>
+                <li class="music-item">
+                    <img src="https://i.scdn.co/image/ab67616d0000b2731f675e7b8bae408653346dd9" alt="Album cover" class="album-cover">
+                    <div class="music-info">
+                        <p class="track-title">Perfume</p>
+                        <p class="artist-album">Hotel Mira • Perfectionism</p>
+                    </div>
+                    <a href="perfume.mp3" download class="download-btn">Download</a>
+                </li>
+                <li class="music-item">
+                    <img src="https://i.scdn.co/image/ab67616d0000b273af5fa7db6e8f9aa27d3fbfe6" alt="Album cover" class="album-cover">
+                    <div class="music-info">
+                        <p class="track-title">Heat Waves</p>
+                        <p class="artist-album">Glass Animals • Dreamland</p>
+                    </div>
+                    <a href="heat-waves.mp3" download class="download-btn">Download</a>
+                </li>
+                <li class="music-item">
+                    <img src="https://i.scdn.co/image/ab67616d0000b273e319fcfa32e3fa0b7d07c0c1" alt="Album cover" class="album-cover">
+                    <div class="music-info">
+                        <p class="track-title">Sofia</p>
+                        <p class="artist-album">Clairo • Immunity</p>
+                    </div>
+                    <a href="sofia.mp3" download class="download-btn">Download</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="player-section">
+            <h2 class="player-title">Music Player Demo</h2>
+            
+            <div class="player-container">
+                <p>Note: For demonstration purposes only. Please download the tracks to listen to full songs.</p>
+                <p>Sample audio player:</p>
+                <audio controls>
+                    <source src="sample.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <p>Having issues with the music player? Download the tracks using the buttons above.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/playlist" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Playlist
+            </a>
+        </div>
+
+        <footer>
+            <p>&copy; 2023 Olivia Branchaud. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

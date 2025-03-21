@@ -4,13 +4,16 @@ import Layout from "../components/Layout";
 import AlbumCard from "../components/AlbumCard";
 import MusicPlayer from "../components/MusicPlayer";
 import { albums, tracks } from "../data/music";
-import { Album, Music, Search, Play } from "lucide-react";
+import { Album, Music, Search, Play, Download, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const Playlist = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTrackIndex, setSelectedTrackIndex] = useState(0);
+  const { toast } = useToast();
   
   const filteredAlbums = albums.filter(album => 
     album.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,6 +39,18 @@ const Playlist = () => {
       setSelectedTrackIndex(trackIndex);
     }
   };
+
+  const handleDownloadMusic = () => {
+    window.open('/music/index.html', '_blank');
+  };
+
+  const showMusicError = () => {
+    toast({
+      title: "Music Player Issue",
+      description: "The music player is currently experiencing issues. Please use the download option instead.",
+      variant: "destructive",
+    });
+  };
   
   return (
     <Layout>
@@ -46,7 +61,20 @@ const Playlist = () => {
         
         {/* Music player */}
         <div className="animate-fade-in">
+          <div className="flex justify-center mb-4">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 bg-white/80"
+              onClick={handleDownloadMusic}
+            >
+              <Download size={16} />
+              <span>Download Music Files</span>
+            </Button>
+          </div>
           <MusicPlayer tracks={tracks} initialTrackIndex={selectedTrackIndex} />
+          <div className="text-center mt-4 text-muted-foreground text-sm">
+            <p>Having issues with the music player? <button onClick={handleDownloadMusic} className="text-olivia-purple hover:underline">Download the tracks</button> or <button onClick={showMusicError} className="text-olivia-purple hover:underline">report an issue</button>.</p>
+          </div>
         </div>
         
         {/* Search bar */}
@@ -115,8 +143,16 @@ const Playlist = () => {
                       <h3 className="font-medium">{track.title}</h3>
                       <p className="text-sm text-muted-foreground">{track.artist} • {track.album}</p>
                     </div>
-                    <div className="flex-shrink-0">
-                      <Play size={20} className="text-olivia-purple" />
+                    <div className="flex-shrink-0 flex gap-2">
+                      <button onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadMusic();
+                      }} className="p-2 rounded-full hover:bg-olivia-purple/10">
+                        <Download size={18} className="text-olivia-purple" />
+                      </button>
+                      <div className="p-2">
+                        <Play size={20} className="text-olivia-purple" />
+                      </div>
                     </div>
                   </div>
                 ))
