@@ -16,11 +16,11 @@ const Tribute = () => {
             <Heart size={120} fill="#9B87F5" strokeWidth={1} />
           </div>
           
-          <h1 className="font-sacramento text-4xl md:text-6xl text-center mb-8 olivia-gradient-text">
+          <h1 className="font-fountain text-4xl md:text-6xl text-center mb-8 olivia-gradient-text">
             To Olivia
           </h1>
           
-          <div className="font-sacramento text-xl md:text-2xl leading-relaxed space-y-6 text-gray-800 relative z-10">
+          <div className="font-fountain text-xl md:text-2xl leading-relaxed space-y-6 text-gray-800 relative z-10">
             <p>
               Liv, there is a quiet elegance in the way you carry yourself—graceful yet strong, delicate yet unwavering. Your deep brown eyes hold an entire universe within them, reflecting warmth, wisdom, and an understanding far beyond your years. They are the kind of eyes that see not just the surface of things, but the depth beneath, carrying both a softness and an intensity that makes the world pause.
             </p>

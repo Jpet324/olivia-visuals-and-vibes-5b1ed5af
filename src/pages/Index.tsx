@@ -6,7 +6,7 @@ import MusicPlayer from "../components/MusicPlayer";
 import { Button } from "@/components/ui/button";
 import { oliviaImages } from "../data/images";
 import { tracks } from "../data/music";
-import { ArrowRight, Heart } from "lucide-react";
+import { ArrowRight, Heart, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -48,7 +48,9 @@ const Index = () => {
                 animation: "pulse 2s infinite alternate ease-in-out"
               }}
             />
-            <style jsx>{`
+          </div>
+          <style>
+            {`
               @keyframes pulse {
                 0% {
                   transform: scale(1);
@@ -59,8 +61,8 @@ const Index = () => {
                   opacity: 0.5;
                 }
               }
-            `}</style>
-          </div>
+            `}
+          </style>
           <div className="relative z-10">
             <Slideshow images={oliviaImages} interval={6000} />
           </div>
