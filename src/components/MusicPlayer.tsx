@@ -9,6 +9,7 @@ interface Track {
   album: string;
   coverArt: string;
   audioSrc?: string;
+  audioFile?: File; // New property for uploaded audio files
 }
 
 interface MusicPlayerProps {
@@ -22,6 +23,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [audioObjectURL, setAudioObjectURL] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
   const currentTrack = tracks[currentTrackIndex];
@@ -52,6 +54,21 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
       // Reset progress when track changes
       setProgress(0);
       
+      // Create object URL for File objects
+      if (currentTrack.audioFile) {
+        // Revoke previous object URL to prevent memory leaks
+        if (audioObjectURL) {
+          URL.revokeObjectURL(audioObjectURL);
+        }
+        
+        // Create new object URL from the File
+        const newObjectURL = URL.createObjectURL(currentTrack.audioFile);
+        setAudioObjectURL(newObjectURL);
+      } else {
+        // If no File object, ensure we're not using an object URL
+        setAudioObjectURL(null);
+      }
+      
       if (isPlaying) {
         audioRef.current.load();
         const playPromise = audioRef.current.play();
@@ -64,7 +81,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
         }
       }
     }
-  }, [currentTrackIndex]);
+    
+    // Cleanup function to revoke object URL when component unmounts
+    return () => {
+      if (audioObjectURL) {
+        URL.revokeObjectURL(audioObjectURL);
+      }
+    };
+  }, [currentTrackIndex, currentTrack.audioFile]);
   
   const togglePlay = () => {
     if (audioRef.current) {
@@ -206,7 +230,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ tracks, initialTrackIndex = 0
         onEnded={handleNext}
         preload="metadata"
       >
-        <source src="https://cdn.pixabay.com/download/audio/2023/06/13/audio_21a41112e1.mp3?filename=cancion-triste-1502.mp3" type="audio/mpeg" />
+        {audioObjectURL ? (
+          <source src={audioObjectURL} type={currentTrack.audioFile?.type} />
+        ) : (
+          <source src={currentTrack.audioSrc} type="audio/mpeg" />
+        )}
         Your browser does not support the audio element.
       </audio>
     </div>
