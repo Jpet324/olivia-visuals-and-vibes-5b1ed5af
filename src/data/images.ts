@@ -16,7 +16,8 @@ export const oliviaImages = [
   "public/lovable-uploads/80d0df3b-6d32-402c-b893-997bdbf16eaf.png",
   "public/lovable-uploads/c3c8ef49-18fc-4f63-9254-a46f6afbe14b.png",
   "public/lovable-uploads/c4632216-7fe6-40a2-90ed-71955fec85cf.png",
-  "public/lovable-uploads/8de3ccf7-1669-4cb1-bee1-8c2763c39344.png"
+  "public/lovable-uploads/8de3ccf7-1669-4cb1-bee1-8c2763c39344.png",
+  "public/lovable-uploads/76f990e9-2b04-4dd4-89d1-5a6e28ec0512.png"
 ];
 
 export const galleryImages = oliviaImages;

@@ -2,10 +2,8 @@
 import React from "react";
 import Layout from "../components/Layout";
 import Slideshow from "../components/Slideshow";
-import MusicPlayer from "../components/MusicPlayer";
 import { Button } from "@/components/ui/button";
 import { oliviaImages } from "../data/images";
-import { tracks } from "../data/music";
 import { ArrowRight, Heart, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -19,7 +17,7 @@ const Index = () => {
             <span className="olivia-gradient-text">Olivia Branchaud</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Exploring life through music, art, and everything in between
+            Exploring life through art, and everything in between
           </p>
           <div className="flex justify-center space-x-4">
             <Button asChild variant="outline" className="rounded-full px-6 group">
@@ -29,8 +27,8 @@ const Index = () => {
               </Link>
             </Button>
             <Button asChild className="rounded-full px-6 bg-olivia-purple hover:bg-olivia-darkPurple">
-              <Link to="/playlist">
-                Explore my playlist
+              <Link to="/gallery">
+                View my gallery
                 <Heart size={16} className="ml-2 transition-transform group-hover:scale-110" />
               </Link>
             </Button>
@@ -68,31 +66,15 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Featured music section */}
-        <section className="space-y-6 animate-slide-up">
-          <h2 className="font-serif text-2xl md:text-3xl text-center font-medium">
-            Currently listening to
-          </h2>
-          <MusicPlayer tracks={tracks} />
-          <div className="text-center">
-            <Button asChild variant="link" className="text-olivia-purple">
-              <Link to="/playlist">
-                See all tracks
-                <ArrowRight size={16} className="ml-1" />
-              </Link>
-            </Button>
-          </div>
-        </section>
-        
         {/* Quote section */}
         <section className="text-center py-12 px-4 glass-card rounded-xl animate-scale-in">
           <blockquote className="font-serif text-xl md:text-2xl italic">
-            "The beauty of music is that it connects people. It carries a message, and we, the musicians, are the messengers."
+            "The beauty is in finding yourself through your passions and dreams."
           </blockquote>
           <cite className="block mt-4 text-muted-foreground not-italic">— Olivia Branchaud</cite>
         </section>
         
-        {/* Tribute and game links */}
+        {/* Game links */}
         <section className="text-center">
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild variant="link" className="text-olivia-purple">

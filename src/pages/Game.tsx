@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,7 @@ const Character = () => (
     <div className="absolute inset-0 bg-olivia-lightPink rounded-full opacity-60"></div>
     <div className="absolute inset-2 bg-olivia-pink rounded-full overflow-hidden flex items-center justify-center">
       <Avatar className="w-full h-full">
-        <AvatarImage src="/lovable-uploads/c9e16818-652a-4aab-972d-c6bbe2a3747c.png" alt="Olivia" />
+        <AvatarImage src="/lovable-uploads/76f990e9-2b04-4dd4-89d1-5a6e28ec0512.png" alt="Olivia" />
         <AvatarFallback className="text-white font-bold text-xs">Olivia</AvatarFallback>
       </Avatar>
     </div>
