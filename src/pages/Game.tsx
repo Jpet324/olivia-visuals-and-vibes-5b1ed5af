@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCap, Map, Globe, Award } from "lucide-react";
 import { motion } from "framer-motion";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 // Game character
 const Character = () => (
@@ -14,8 +15,11 @@ const Character = () => (
     transition={{ repeat: Infinity, duration: 2 }}
   >
     <div className="absolute inset-0 bg-olivia-lightPink rounded-full opacity-60"></div>
-    <div className="absolute inset-2 bg-olivia-pink rounded-full opacity-80 flex items-center justify-center">
-      <span className="text-white font-bold text-xs">Olivia</span>
+    <div className="absolute inset-2 bg-olivia-pink rounded-full overflow-hidden flex items-center justify-center">
+      <Avatar className="w-full h-full">
+        <AvatarImage src="/lovable-uploads/c9e16818-652a-4aab-972d-c6bbe2a3747c.png" alt="Olivia" />
+        <AvatarFallback className="text-white font-bold text-xs">Olivia</AvatarFallback>
+      </Avatar>
     </div>
   </motion.div>
 );

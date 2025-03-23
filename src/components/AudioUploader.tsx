@@ -39,8 +39,10 @@ const AudioUploader = ({ onAudioUpload }: AudioUploaderProps) => {
     e.preventDefault();
     setIsDragging(false);
     
-    const file = e.dataTransfer.files[0];
-    handleFileSelection(file);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      handleFileSelection(file);
+    }
   };
 
   const handleFileSelection = (file: File) => {
