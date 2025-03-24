@@ -1,6 +1,5 @@
-
 import { useState, useRef } from "react";
-import { Upload, X, Cube } from "lucide-react";
+import { Upload, X, Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 
@@ -48,7 +47,6 @@ const ModelUploader = ({ onModelUpload }: ModelUploaderProps) => {
   const handleFileSelection = (file: File) => {
     if (!file) return;
     
-    // Check if file is a 3D model format
     const validExtensions = ['.obj', '.glb', '.gltf', '.fbx', '.stl', '.3ds', '.dae'];
     const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
     
@@ -61,7 +59,6 @@ const ModelUploader = ({ onModelUpload }: ModelUploaderProps) => {
       return;
     }
     
-    // Limit file size to 50MB
     const maxSize = 50 * 1024 * 1024; // 50MB in bytes
     if (file.size > maxSize) {
       toast({
@@ -74,7 +71,6 @@ const ModelUploader = ({ onModelUpload }: ModelUploaderProps) => {
     
     setSelectedFile(file);
     
-    // Pre-fill title with filename (without extension)
     const fileName = file.name.replace(/\.[^/.]+$/, "");
     setMetadata(prev => ({
       ...prev,
@@ -152,7 +148,7 @@ const ModelUploader = ({ onModelUpload }: ModelUploaderProps) => {
             accept=".obj,.glb,.gltf,.fbx,.stl,.3ds,.dae"
           />
           
-          <Cube size={40} className="mx-auto text-muted-foreground mb-4" />
+          <Box size={40} className="mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">Upload 3D Models</h3>
           <p className="text-muted-foreground mb-4">
             Drag and drop your 3D model files here, or click to browse

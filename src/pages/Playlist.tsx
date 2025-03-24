@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import AlbumCard from "../components/AlbumCard";
@@ -6,7 +5,7 @@ import MusicPlayer from "../components/MusicPlayer";
 import AudioUploader from "../components/AudioUploader";
 import ModelUploader from "../components/ModelUploader";
 import { albums, tracks as initialTracks } from "../data/music";
-import { Album, Music, Search, Play, Download, ExternalLink, Upload, Cube } from "lucide-react";
+import { Album, Music, Search, Play, Download, ExternalLink, Upload, Box } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -58,7 +57,6 @@ const Playlist = () => {
       }
     }
     
-    // Load saved models info
     const savedModelsInfo = localStorage.getItem('uploaded-models-info');
     if (savedModelsInfo) {
       try {
@@ -232,7 +230,7 @@ const Playlist = () => {
                 <span>Upload Music</span>
               </TabsTrigger>
               <TabsTrigger value="models" className="flex items-center gap-2">
-                <Cube size={16} />
+                <Box size={16} />
                 <span>Upload 3D Models</span>
               </TabsTrigger>
             </TabsList>
@@ -251,7 +249,7 @@ const Playlist = () => {
                     {models.map((model) => (
                       <div key={model.id} className="p-4 flex items-center space-x-3">
                         <div className="bg-olivia-purple/10 p-3 rounded-lg">
-                          <Cube size={24} className="text-olivia-purple" />
+                          <Box size={24} className="text-olivia-purple" />
                         </div>
                         <div className="flex-grow">
                           <h4 className="font-medium">{model.title}</h4>
