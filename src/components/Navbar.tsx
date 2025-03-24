@@ -45,9 +45,6 @@ const Navbar: React.FC = () => {
           <Link to="/about" className={isActive("/about") ? "nav-link-active" : "nav-link"}>
             About
           </Link>
-          <Link to="/playlist" className={isActive("/playlist") ? "nav-link-active" : "nav-link"}>
-            Playlist
-          </Link>
           <Link to="/gallery" className={isActive("/gallery") ? "nav-link-active" : "nav-link"}>
             Gallery
           </Link>
@@ -77,9 +74,6 @@ const Navbar: React.FC = () => {
           </Link>
           <Link to="/about" className={`text-center py-2 ${isActive("/about") ? "text-olivia-purple font-medium" : ""}`}>
             About
-          </Link>
-          <Link to="/playlist" className={`text-center py-2 ${isActive("/playlist") ? "text-olivia-purple font-medium" : ""}`}>
-            Playlist
           </Link>
           <Link to="/gallery" className={`text-center py-2 ${isActive("/gallery") ? "text-olivia-purple font-medium" : ""}`}>
             Gallery
