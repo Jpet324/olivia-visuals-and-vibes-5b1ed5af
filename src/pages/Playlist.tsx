@@ -1,15 +1,18 @@
+
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import AlbumCard from "../components/AlbumCard";
 import MusicPlayer from "../components/MusicPlayer";
 import AudioUploader from "../components/AudioUploader";
+import ModelUploader from "../components/ModelUploader";
 import { albums, tracks as initialTracks } from "../data/music";
-import { Album, Music, Search, Play, Download, ExternalLink, Upload } from "lucide-react";
+import { Album, Music, Search, Play, Download, ExternalLink, Upload, Cube } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { AudioMetadata } from "@/components/AudioUploader";
+import { ModelMetadata } from "@/components/ModelUploader";
 
 interface Track {
   id: number;
@@ -21,10 +24,21 @@ interface Track {
   audioFile?: File;
 }
 
+interface Model {
+  id: number;
+  title: string;
+  creator: string;
+  description: string;
+  fileType: string;
+  file: File;
+}
+
 const Playlist = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTrackIndex, setSelectedTrackIndex] = useState(0);
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
+  const [models, setModels] = useState<Model[]>([]);
+  const [activeUploadTab, setActiveUploadTab] = useState("audio");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -41,6 +55,17 @@ const Playlist = () => {
         setTracks(baseTracksOnly);
       } catch (error) {
         console.error("Error parsing saved tracks:", error);
+      }
+    }
+    
+    // Load saved models info
+    const savedModelsInfo = localStorage.getItem('uploaded-models-info');
+    if (savedModelsInfo) {
+      try {
+        const parsedModelsInfo = JSON.parse(savedModelsInfo);
+        setModels(parsedModelsInfo);
+      } catch (error) {
+        console.error("Error parsing saved models:", error);
       }
     }
   }, []);
@@ -122,11 +147,53 @@ const Playlist = () => {
     }
   };
   
+  const handleModelUpload = (file: File, metadata: ModelMetadata) => {
+    const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    
+    const newModel: Model = {
+      id: Date.now(),
+      title: metadata.title,
+      creator: metadata.creator || "Unknown Creator",
+      description: metadata.description || "",
+      fileType: fileExtension,
+      file: file
+    };
+    
+    const updatedModels = [...models, newModel];
+    setModels(updatedModels);
+    
+    try {
+      const storableModel = {
+        id: newModel.id,
+        title: newModel.title,
+        creator: newModel.creator,
+        description: newModel.description,
+        fileType: newModel.fileType,
+        fileName: file.name,
+        fileSize: file.size,
+        uploadDate: new Date().toISOString()
+      };
+      
+      const existingData = localStorage.getItem('uploaded-models-info');
+      const existingModels = existingData ? JSON.parse(existingData) : [];
+      
+      existingModels.push(storableModel);
+      localStorage.setItem('uploaded-models-info', JSON.stringify(existingModels));
+      
+      toast({
+        title: "3D Model Added",
+        description: `${metadata.title} has been added to your collection.`,
+      });
+    } catch (error) {
+      console.error("Error saving model to localStorage:", error);
+    }
+  };
+  
   return (
     <Layout>
       <div className="max-w-6xl mx-auto space-y-8">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-center">
-          <span className="olivia-gradient-text">My Music Collection</span>
+          <span className="olivia-gradient-text">My Collection</span>
         </h1>
         
         <div className="animate-fade-in">
@@ -158,16 +225,50 @@ const Playlist = () => {
         </div>
         
         <div className="animate-slide-up mt-4">
-          <Tabs defaultValue="upload">
-            <TabsList className="w-full mb-4">
-              <TabsTrigger value="upload" className="flex items-center gap-2 w-full">
+          <Tabs defaultValue="audio" value={activeUploadTab} onValueChange={setActiveUploadTab}>
+            <TabsList className="w-full mb-4 grid grid-cols-2">
+              <TabsTrigger value="audio" className="flex items-center gap-2">
                 <Upload size={16} />
-                <span>Upload Your Music</span>
+                <span>Upload Music</span>
+              </TabsTrigger>
+              <TabsTrigger value="models" className="flex items-center gap-2">
+                <Cube size={16} />
+                <span>Upload 3D Models</span>
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="upload">
+            <TabsContent value="audio">
               <AudioUploader onAudioUpload={handleAudioUpload} />
+            </TabsContent>
+            
+            <TabsContent value="models">
+              <ModelUploader onModelUpload={handleModelUpload} />
+              
+              {models.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-serif text-xl font-medium mb-4">Your 3D Models</h3>
+                  <div className="glass-card rounded-xl divide-y divide-border">
+                    {models.map((model) => (
+                      <div key={model.id} className="p-4 flex items-center space-x-3">
+                        <div className="bg-olivia-purple/10 p-3 rounded-lg">
+                          <Cube size={24} className="text-olivia-purple" />
+                        </div>
+                        <div className="flex-grow">
+                          <h4 className="font-medium">{model.title}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {model.creator} • {model.fileType.toUpperCase()} file
+                          </p>
+                          {model.description && (
+                            <p className="text-sm mt-1 text-muted-foreground line-clamp-2">
+                              {model.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

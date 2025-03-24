@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,114 @@ const locations = [
       "Rio hosted the 2016 Summer Olympics.",
       "The Tijuca Forest is the world's largest urban forest."
     ]
+  },
+  {
+    id: "newyork",
+    name: "New York, USA",
+    facts: [
+      "The Statue of Liberty was a gift from France in 1886.",
+      "Central Park spans 843 acres in the heart of Manhattan.",
+      "New York's subway system has 472 stations, the most of any system worldwide."
+    ]
+  },
+  {
+    id: "sydney",
+    name: "Sydney, Australia",
+    facts: [
+      "The Sydney Opera House took 14 years to build, from 1959 to 1973.",
+      "Sydney Harbour Bridge is the world's largest steel arch bridge.",
+      "Sydney's Bondi Beach is one of the world's most famous beaches."
+    ]
+  },
+  {
+    id: "rome",
+    name: "Rome, Italy",
+    facts: [
+      "The Colosseum could hold up to 80,000 spectators in ancient times.",
+      "Romans toss about €1.5 million into the Trevi Fountain each year.",
+      "The Vatican City, located in Rome, is the smallest country in the world."
+    ]
+  },
+  {
+    id: "beijing",
+    name: "Beijing, China",
+    facts: [
+      "The Forbidden City has 9,999 rooms, just short of the mythical 10,000 that would belong to heaven.",
+      "The Great Wall of China is not visible from space with the naked eye, contrary to popular belief.",
+      "Beijing has served as China's capital for over 800 years."
+    ]
+  },
+  {
+    id: "marrakech",
+    name: "Marrakech, Morocco",
+    facts: [
+      "Jemaa el-Fnaa square transforms from a market by day to an open-air restaurant by night.",
+      "The city is known as the 'Red City' because of its buildings and walls of red sandstone.",
+      "Marrakech contains the largest traditional Berber market in Morocco."
+    ]
+  },
+  {
+    id: "capetown",
+    name: "Cape Town, South Africa",
+    facts: [
+      "Table Mountain is one of the oldest mountains in the world at approximately 600 million years old.",
+      "Cape Town was the first European settlement in South Africa, established in 1652.",
+      "The city is known for having the highest commercial bungee jump in the world at 216 meters."
+    ]
+  },
+  {
+    id: "mumbai",
+    name: "Mumbai, India",
+    facts: [
+      "The Gateway of India was built to commemorate the visit of King George V and Queen Mary in 1911.",
+      "Mumbai's Dharavi is one of the largest slums in Asia but also one of the most productive.",
+      "The city has the world's most expensive private residence, Antilia, valued at over $1 billion."
+    ]
+  },
+  {
+    id: "dubai",
+    name: "Dubai, UAE",
+    facts: [
+      "The Burj Khalifa is the tallest building in the world at 828 meters.",
+      "Only about 15% of Dubai's population are UAE nationals.",
+      "Dubai has built the world's largest artificial islands, the Palm Islands."
+    ]
+  },
+  {
+    id: "istanbul",
+    name: "Istanbul, Turkey",
+    facts: [
+      "Istanbul is the only city in the world that spans two continents: Europe and Asia.",
+      "The Grand Bazaar is one of the world's oldest and largest covered markets with over 4,000 shops.",
+      "The Hagia Sophia has served as a church, mosque, and museum throughout its 1,500-year history."
+    ]
+  },
+  {
+    id: "moscow",
+    name: "Moscow, Russia",
+    facts: [
+      "The Moscow Kremlin is the largest active fortress in Europe.",
+      "Red Square got its name not from the color of its bricks but from the word 'krasnyi', which once meant 'beautiful'.",
+      "The Moscow Metro is known for its ornate stations decorated with chandeliers, mosaics and marble."
+    ]
+  },
+  {
+    id: "buenosaires",
+    name: "Buenos Aires, Argentina",
+    facts: [
+      "The city has the highest concentration of theaters in the world.",
+      "The Obelisk, built in 1936, is the iconic symbol of Buenos Aires.",
+      "The city's Recoleta Cemetery is where Eva Perón is buried, among other notable figures."
+    ]
+  },
+  {
+    id: "vancouver",
+    name: "Vancouver, Canada",
+    facts: [
+      "Stanley Park is larger than New York's Central Park at 1,001 acres.",
+      "Vancouver has been consistently ranked as one of the most livable cities in the world.",
+      "The city has the third largest film production industry in North America, nicknamed 'Hollywood North'."
+    ]
   }
 ];
 
@@ -94,6 +203,7 @@ const Game = () => {
   const [currentLocation, setCurrentLocation] = useState<string | null>(null);
   const [points, setPoints] = useState(0);
   const [visitedLocations, setVisitedLocations] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState("map");
 
   const handleExplore = (locationId: string) => {
     if (!visitedLocations.includes(locationId)) {
@@ -101,6 +211,30 @@ const Game = () => {
       setVisitedLocations(prev => [...prev, locationId]);
     }
     setCurrentLocation(locationId);
+  };
+
+  const handleJourneyClick = () => {
+    setActiveTab("journey");
+  };
+
+  // Create coordinates for each location (approximate)
+  const locationCoordinates = {
+    paris: { top: "30%", left: "48%" },
+    tokyo: { top: "35%", left: "80%" },
+    cairo: { top: "40%", left: "55%" },
+    rio: { top: "60%", left: "35%" },
+    newyork: { top: "35%", left: "30%" },
+    sydney: { top: "65%", left: "85%" },
+    rome: { top: "35%", left: "50%" },
+    beijing: { top: "35%", left: "75%" },
+    marrakech: { top: "40%", left: "45%" },
+    capetown: { top: "65%", left: "52%" },
+    mumbai: { top: "45%", left: "65%" },
+    dubai: { top: "42%", left: "60%" },
+    istanbul: { top: "35%", left: "55%" },
+    moscow: { top: "25%", left: "58%" },
+    buenosaires: { top: "70%", left: "35%" },
+    vancouver: { top: "30%", left: "20%" }
   };
 
   return (
@@ -129,7 +263,7 @@ const Game = () => {
             Join Olivia as she explores famous locations around the world! Learn interesting facts about each place and collect points on your educational journey.
           </p>
           
-          <Tabs defaultValue="map" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-2 mb-6">
               <TabsTrigger value="map" className="flex items-center space-x-2">
                 <Map size={16} />
@@ -144,41 +278,27 @@ const Game = () => {
             <TabsContent value="map" className="space-y-4">
               <div className="relative h-64 md:h-96 bg-blue-50 rounded-xl overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-gray-400">
-                    <Globe size={48} className="mx-auto mb-2 text-olivia-purple/50" />
-                    <p>Interactive world map coming soon!</p>
-                  </div>
+                  <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1920px-Equirectangular_projection_SW.jpg" 
+                    alt="World Map"
+                    className="w-full h-full object-cover opacity-70"
+                  />
                 </div>
                 
                 {/* Clickable location markers */}
-                <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2">
-                  <button 
-                    onClick={() => handleExplore("paris")}
-                    className={`w-6 h-6 rounded-full bg-olivia-purple ${visitedLocations.includes("paris") ? "ring-2 ring-olivia-pink" : ""}`} 
-                    title="Paris, France"
-                  ></button>
-                </div>
-                <div className="absolute top-1/3 left-2/3">
-                  <button 
-                    onClick={() => handleExplore("tokyo")}
-                    className={`w-6 h-6 rounded-full bg-olivia-purple ${visitedLocations.includes("tokyo") ? "ring-2 ring-olivia-pink" : ""}`} 
-                    title="Tokyo, Japan"
-                  ></button>
-                </div>
-                <div className="absolute top-1/2 left-1/3">
-                  <button 
-                    onClick={() => handleExplore("cairo")}
-                    className={`w-6 h-6 rounded-full bg-olivia-purple ${visitedLocations.includes("cairo") ? "ring-2 ring-olivia-pink" : ""}`} 
-                    title="Cairo, Egypt"
-                  ></button>
-                </div>
-                <div className="absolute bottom-1/3 right-1/3">
-                  <button 
-                    onClick={() => handleExplore("rio")}
-                    className={`w-6 h-6 rounded-full bg-olivia-purple ${visitedLocations.includes("rio") ? "ring-2 ring-olivia-pink" : ""}`} 
-                    title="Rio de Janeiro, Brazil"
-                  ></button>
-                </div>
+                {Object.entries(locationCoordinates).map(([locationId, position]) => (
+                  <div 
+                    key={locationId}
+                    className="absolute" 
+                    style={{ top: position.top, left: position.left }}
+                  >
+                    <button 
+                      onClick={() => handleExplore(locationId)}
+                      className={`w-4 h-4 md:w-6 md:h-6 rounded-full bg-olivia-purple ${visitedLocations.includes(locationId) ? "ring-2 ring-olivia-pink animate-pulse" : ""} hover:ring-2 hover:ring-olivia-pink transition-all`} 
+                      title={locations.find(loc => loc.id === locationId)?.name || ""}
+                    ></button>
+                  </div>
+                ))}
               </div>
               
               {currentLocation && (
