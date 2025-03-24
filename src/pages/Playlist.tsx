@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import AlbumCard from "../components/AlbumCard";
@@ -319,69 +318,75 @@ const Playlist = () => {
               </Button>
             </div>
             
-            <TabsContent value="audio" forceMount={activeTab === "audio"}>
-              <AudioUploader onAudioUpload={handleAudioUpload} />
-            </TabsContent>
+            {activeTab === "audio" && (
+              <TabsContent value="audio">
+                <AudioUploader onAudioUpload={handleAudioUpload} />
+              </TabsContent>
+            )}
             
-            <TabsContent value="models" forceMount={activeTab === "models"}>
-              <ModelUploader onModelUpload={handleModelUpload} />
-              
-              {models.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="font-serif text-xl font-medium mb-4">Your 3D Models</h3>
-                  <div className="glass-card rounded-xl divide-y divide-border">
-                    {models.map((model) => (
-                      <div key={model.id} className="p-4 flex items-center space-x-3">
-                        <div className="bg-olivia-purple/10 p-3 rounded-lg">
-                          <Box size={24} className="text-olivia-purple" />
-                        </div>
-                        <div className="flex-grow">
-                          <h4 className="font-medium">{model.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {model.creator} • {model.fileType.toUpperCase()} file
-                          </p>
-                          {model.description && (
-                            <p className="text-sm mt-1 text-muted-foreground line-clamp-2">
-                              {model.description}
+            {activeTab === "models" && (
+              <TabsContent value="models">
+                <ModelUploader onModelUpload={handleModelUpload} />
+                
+                {models.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="font-serif text-xl font-medium mb-4">Your 3D Models</h3>
+                    <div className="glass-card rounded-xl divide-y divide-border">
+                      {models.map((model) => (
+                        <div key={model.id} className="p-4 flex items-center space-x-3">
+                          <div className="bg-olivia-purple/10 p-3 rounded-lg">
+                            <Box size={24} className="text-olivia-purple" />
+                          </div>
+                          <div className="flex-grow">
+                            <h4 className="font-medium">{model.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {model.creator} • {model.fileType.toUpperCase()} file
                             </p>
-                          )}
+                            {model.description && (
+                              <p className="text-sm mt-1 text-muted-foreground line-clamp-2">
+                                {model.description}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </TabsContent>
+                )}
+              </TabsContent>
+            )}
             
-            <TabsContent value="media" forceMount={activeTab === "media"}>
-              <MediaUploader onMediaUpload={handleMediaUpload} />
-              
-              {media.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="font-serif text-xl font-medium mb-4">Your Media Files</h3>
-                  <div className="glass-card rounded-xl divide-y divide-border">
-                    {media.map((item) => (
-                      <div key={item.id} className="p-4 flex items-center space-x-3">
-                        <div className="bg-olivia-purple/10 p-3 rounded-lg">
-                          <FileVideo size={24} className="text-olivia-purple" />
-                        </div>
-                        <div className="flex-grow">
-                          <h4 className="font-medium">{item.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {item.creator} • {item.type === 'video' ? 'Video' : 'Audio'} • {item.fileType.toUpperCase().replace('.', '')}
-                          </p>
-                          {item.description && (
-                            <p className="text-sm mt-1 text-muted-foreground line-clamp-2">
-                              {item.description}
+            {activeTab === "media" && (
+              <TabsContent value="media">
+                <MediaUploader onMediaUpload={handleMediaUpload} />
+                
+                {media.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="font-serif text-xl font-medium mb-4">Your Media Files</h3>
+                    <div className="glass-card rounded-xl divide-y divide-border">
+                      {media.map((item) => (
+                        <div key={item.id} className="p-4 flex items-center space-x-3">
+                          <div className="bg-olivia-purple/10 p-3 rounded-lg">
+                            <FileVideo size={24} className="text-olivia-purple" />
+                          </div>
+                          <div className="flex-grow">
+                            <h4 className="font-medium">{item.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {item.creator} • {item.type === 'video' ? 'Video' : 'Audio'} • {item.fileType.toUpperCase().replace('.', '')}
                             </p>
-                          )}
+                            {item.description && (
+                              <p className="text-sm mt-1 text-muted-foreground line-clamp-2">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </TabsContent>
+                )}
+              </TabsContent>
+            )}
           </Tabs>
         </div>
         
