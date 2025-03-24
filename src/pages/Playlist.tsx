@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import AlbumCard from "../components/AlbumCard";
@@ -50,7 +51,7 @@ const Playlist = () => {
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
   const [models, setModels] = useState<Model[]>([]);
   const [media, setMedia] = useState<Media[]>([]);
-  const [activeUploadTab, setActiveUploadTab] = useState("audio");
+  const [activeTab, setActiveTab] = useState("audio");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -290,27 +291,39 @@ const Playlist = () => {
         </div>
         
         <div className="animate-slide-up mt-4">
-          <Tabs defaultValue="audio" value={activeUploadTab} onValueChange={setActiveUploadTab}>
-            <TabsList className="w-full mb-4 grid grid-cols-3">
-              <TabsTrigger value="audio" className="flex items-center gap-2">
+          <Tabs defaultValue="audio" value={activeTab} onValueChange={setActiveTab}>
+            <div className="flex justify-between gap-2 mb-6">
+              <Button 
+                variant={activeTab === "audio" ? "default" : "outline"} 
+                className={`flex-1 flex items-center justify-center gap-2 ${activeTab === "audio" ? "" : "bg-white/80"}`}
+                onClick={() => setActiveTab("audio")}
+              >
                 <Upload size={16} />
                 <span>Upload Music</span>
-              </TabsTrigger>
-              <TabsTrigger value="models" className="flex items-center gap-2">
+              </Button>
+              <Button 
+                variant={activeTab === "models" ? "default" : "outline"} 
+                className={`flex-1 flex items-center justify-center gap-2 ${activeTab === "models" ? "" : "bg-white/80"}`}
+                onClick={() => setActiveTab("models")}
+              >
                 <Box size={16} />
                 <span>Upload 3D Models</span>
-              </TabsTrigger>
-              <TabsTrigger value="media" className="flex items-center gap-2">
+              </Button>
+              <Button 
+                variant={activeTab === "media" ? "default" : "outline"} 
+                className={`flex-1 flex items-center justify-center gap-2 ${activeTab === "media" ? "" : "bg-white/80"}`}
+                onClick={() => setActiveTab("media")}
+              >
                 <FileVideo size={16} />
                 <span>Upload Media</span>
-              </TabsTrigger>
-            </TabsList>
+              </Button>
+            </div>
             
-            <TabsContent value="audio">
+            <TabsContent value="audio" forceMount={activeTab === "audio"}>
               <AudioUploader onAudioUpload={handleAudioUpload} />
             </TabsContent>
             
-            <TabsContent value="models">
+            <TabsContent value="models" forceMount={activeTab === "models"}>
               <ModelUploader onModelUpload={handleModelUpload} />
               
               {models.length > 0 && (
@@ -340,7 +353,7 @@ const Playlist = () => {
               )}
             </TabsContent>
             
-            <TabsContent value="media">
+            <TabsContent value="media" forceMount={activeTab === "media"}>
               <MediaUploader onMediaUpload={handleMediaUpload} />
               
               {media.length > 0 && (
