@@ -4,14 +4,16 @@ import AlbumCard from "../components/AlbumCard";
 import MusicPlayer from "../components/MusicPlayer";
 import AudioUploader from "../components/AudioUploader";
 import ModelUploader from "../components/ModelUploader";
+import MediaUploader from "../components/MediaUploader";
 import { albums, tracks as initialTracks } from "../data/music";
-import { Album, Music, Search, Play, Download, ExternalLink, Upload, Box } from "lucide-react";
+import { Album, Music, Search, Play, Download, ExternalLink, Upload, Box, FileVideo } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { AudioMetadata } from "@/components/AudioUploader";
 import { ModelMetadata } from "@/components/ModelUploader";
+import { MediaMetadata } from "@/components/MediaUploader";
 
 interface Track {
   id: number;
@@ -32,11 +34,22 @@ interface Model {
   file: File;
 }
 
+interface Media {
+  id: number;
+  title: string;
+  creator: string;
+  description: string;
+  type: "video" | "audio";
+  fileType: string;
+  file: File;
+}
+
 const Playlist = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTrackIndex, setSelectedTrackIndex] = useState(0);
   const [tracks, setTracks] = useState<Track[]>(initialTracks);
   const [models, setModels] = useState<Model[]>([]);
+  const [media, setMedia] = useState<Media[]>([]);
   const [activeUploadTab, setActiveUploadTab] = useState("audio");
   const { toast } = useToast();
 
@@ -64,6 +77,16 @@ const Playlist = () => {
         setModels(parsedModelsInfo);
       } catch (error) {
         console.error("Error parsing saved models:", error);
+      }
+    }
+    
+    const savedMediaInfo = localStorage.getItem('uploaded-media-info');
+    if (savedMediaInfo) {
+      try {
+        const parsedMediaInfo = JSON.parse(savedMediaInfo);
+        setMedia(parsedMediaInfo);
+      } catch (error) {
+        console.error("Error parsing saved media:", error);
       }
     }
   }, []);
@@ -187,6 +210,50 @@ const Playlist = () => {
     }
   };
   
+  const handleMediaUpload = (file: File, metadata: MediaMetadata) => {
+    const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    
+    const newMedia: Media = {
+      id: Date.now(),
+      title: metadata.title,
+      creator: metadata.creator || "Unknown Creator",
+      description: metadata.description || "",
+      type: metadata.type,
+      fileType: fileExtension,
+      file: file
+    };
+    
+    const updatedMedia = [...media, newMedia];
+    setMedia(updatedMedia);
+    
+    try {
+      const storableMedia = {
+        id: newMedia.id,
+        title: newMedia.title,
+        creator: newMedia.creator,
+        description: newMedia.description,
+        type: newMedia.type,
+        fileType: newMedia.fileType,
+        fileName: file.name,
+        fileSize: file.size,
+        uploadDate: new Date().toISOString()
+      };
+      
+      const existingData = localStorage.getItem('uploaded-media-info');
+      const existingMedia = existingData ? JSON.parse(existingData) : [];
+      
+      existingMedia.push(storableMedia);
+      localStorage.setItem('uploaded-media-info', JSON.stringify(existingMedia));
+      
+      toast({
+        title: `${metadata.type === 'video' ? 'Video' : 'Audio'} Added`,
+        description: `${metadata.title} has been added to your collection.`,
+      });
+    } catch (error) {
+      console.error("Error saving media to localStorage:", error);
+    }
+  };
+  
   return (
     <Layout>
       <div className="max-w-6xl mx-auto space-y-8">
@@ -224,7 +291,7 @@ const Playlist = () => {
         
         <div className="animate-slide-up mt-4">
           <Tabs defaultValue="audio" value={activeUploadTab} onValueChange={setActiveUploadTab}>
-            <TabsList className="w-full mb-4 grid grid-cols-2">
+            <TabsList className="w-full mb-4 grid grid-cols-3">
               <TabsTrigger value="audio" className="flex items-center gap-2">
                 <Upload size={16} />
                 <span>Upload Music</span>
@@ -232,6 +299,10 @@ const Playlist = () => {
               <TabsTrigger value="models" className="flex items-center gap-2">
                 <Box size={16} />
                 <span>Upload 3D Models</span>
+              </TabsTrigger>
+              <TabsTrigger value="media" className="flex items-center gap-2">
+                <FileVideo size={16} />
+                <span>Upload Media</span>
               </TabsTrigger>
             </TabsList>
             
@@ -259,6 +330,36 @@ const Playlist = () => {
                           {model.description && (
                             <p className="text-sm mt-1 text-muted-foreground line-clamp-2">
                               {model.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="media">
+              <MediaUploader onMediaUpload={handleMediaUpload} />
+              
+              {media.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-serif text-xl font-medium mb-4">Your Media Files</h3>
+                  <div className="glass-card rounded-xl divide-y divide-border">
+                    {media.map((item) => (
+                      <div key={item.id} className="p-4 flex items-center space-x-3">
+                        <div className="bg-olivia-purple/10 p-3 rounded-lg">
+                          <FileVideo size={24} className="text-olivia-purple" />
+                        </div>
+                        <div className="flex-grow">
+                          <h4 className="font-medium">{item.title}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {item.creator} • {item.type === 'video' ? 'Video' : 'Audio'} • {item.fileType.toUpperCase().replace('.', '')}
+                          </p>
+                          {item.description && (
+                            <p className="text-sm mt-1 text-muted-foreground line-clamp-2">
+                              {item.description}
                             </p>
                           )}
                         </div>
