@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Map, Globe, Award } from "lucide-react";
+import { GraduationCap, Map, Globe, Award, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -22,6 +23,96 @@ const Character = () => (
     </div>
   </motion.div>
 );
+
+// Street View component
+interface StreetViewProps {
+  locationId: string;
+  onClose: () => void;
+}
+
+const StreetView: React.FC<StreetViewProps> = ({ locationId, onClose }) => {
+  const getStreetViewUrl = (id: string) => {
+    const coordinates = {
+      paris: "48.8584,2.2945", // Eiffel Tower
+      tokyo: "35.6762,139.6503", // Tokyo Tower
+      cairo: "29.9773,31.1325", // Great Pyramid of Giza
+      rio: "-22.9519,-43.2106", // Christ the Redeemer
+      newyork: "40.7484,-73.9857", // Empire State Building
+      sydney: "-33.8568,151.2153", // Sydney Opera House
+      rome: "41.8902,12.4922", // Colosseum
+      beijing: "39.9042,116.3914", // Forbidden City
+      marrakech: "31.6295,-7.9811", // Jemaa el-Fnaa
+      capetown: "-33.9249,18.4241", // Table Mountain
+      mumbai: "18.9220,72.8347", // Gateway of India
+      dubai: "25.1972,55.2744", // Burj Khalifa
+      istanbul: "41.0082,28.9784", // Hagia Sophia
+      moscow: "55.7539,37.6208", // Red Square
+      buenosaires: "-34.6037,-58.3816", // Obelisco
+      vancouver: "49.2827,-123.1207", // Stanley Park
+    };
+
+    return `https://www.google.com/maps/embed/v1/streetview?key=YOUR_API_KEY&location=${coordinates[id as keyof typeof coordinates]}&heading=210&pitch=10&fov=90`;
+  };
+
+  const mockStreetViewImages = {
+    paris: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/640px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg",
+    tokyo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Tokyo_Tower_perfect_night_time.jpg/640px-Tokyo_Tower_perfect_night_time.jpg",
+    cairo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/640px-Kheops-Pyramid.jpg",
+    rio: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Christ_the_Redeemer_-_Cristo_Redentor.jpg/640px-Christ_the_Redeemer_-_Cristo_Redentor.jpg",
+    newyork: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/640px-Empire_State_Building_%28aerial_view%29.jpg",
+    sydney: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Sydney_Opera_House%2C_botanic_gardens_1.jpg/640px-Sydney_Opera_House%2C_botanic_gardens_1.jpg",
+    rome: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Colosseum_in_Rome-April_2007-1-_copie_2B.jpg/640px-Colosseum_in_Rome-April_2007-1-_copie_2B.jpg",
+    beijing: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Forbidden_City_Beijing_Shenwumen_Gate.jpg/640px-Forbidden_City_Beijing_Shenwumen_Gate.jpg",
+    marrakech: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Jemaa_el-Fnaa.JPG/640px-Jemaa_el-Fnaa.JPG",
+    capetown: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Table_Mountain_DanieVDM.jpg/640px-Table_Mountain_DanieVDM.jpg",
+    mumbai: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Gateway_of_India_at_night.jpg/640px-Gateway_of_India_at_night.jpg",
+    dubai: "https://upload.wikimedia.org/wikipedia/en/thumb/9/93/Burj_Khalifa.jpg/640px-Burj_Khalifa.jpg",
+    istanbul: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Hagia_Sophia_Mars_2013.jpg/640px-Hagia_Sophia_Mars_2013.jpg",
+    moscow: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Red_Square%2C_Moscow.jpg/640px-Red_Square%2C_Moscow.jpg",
+    buenosaires: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Obelisco-Buenos_Aires_city.jpg/640px-Obelisco-Buenos_Aires_city.jpg",
+    vancouver: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Stanley-Park-2016.jpg/640px-Stanley-Park-2016.jpg",
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+      <div className="relative w-full max-w-3xl bg-white rounded-lg shadow-xl overflow-hidden">
+        <Button 
+          variant="ghost" 
+          className="absolute top-2 right-2 z-10" 
+          onClick={onClose}
+        >
+          <X className="h-5 w-5" />
+        </Button>
+        
+        <div className="aspect-video">
+          <img 
+            src={mockStreetViewImages[locationId as keyof typeof mockStreetViewImages]} 
+            alt={`Street view of ${locationId}`}
+            className="w-full h-full object-cover"
+          />
+          {/* In a real app with API key:
+          <iframe
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            style={{ border: 0 }}
+            src={getStreetViewUrl(locationId)}
+            allowFullScreen
+          ></iframe> */}
+        </div>
+        
+        <div className="p-4 bg-white">
+          <h3 className="font-serif text-xl font-bold">
+            {locations.find(loc => loc.id === locationId)?.name}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Street view of this famous landmark
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Location component
 interface LocationProps {
@@ -204,6 +295,7 @@ const Game = () => {
   const [visitedLocations, setVisitedLocations] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("map");
   const [zoomedLocation, setZoomedLocation] = useState<string | null>(null);
+  const [showStreetView, setShowStreetView] = useState<string | null>(null);
 
   const handleExplore = (locationId: string) => {
     if (!visitedLocations.includes(locationId)) {
@@ -229,23 +321,32 @@ const Game = () => {
     setZoomedLocation(null);
   };
 
+  const openStreetView = (locationId: string) => {
+    setShowStreetView(locationId);
+  };
+
+  const closeStreetView = () => {
+    setShowStreetView(null);
+  };
+
+  // More accurate coordinates for the world map
   const locationCoordinates = {
-    paris: { top: "30%", left: "48%" },
-    tokyo: { top: "35%", left: "80%" },
-    cairo: { top: "40%", left: "55%" },
-    rio: { top: "60%", left: "35%" },
-    newyork: { top: "35%", left: "30%" },
-    sydney: { top: "65%", left: "85%" },
-    rome: { top: "35%", left: "50%" },
-    beijing: { top: "35%", left: "75%" },
-    marrakech: { top: "40%", left: "45%" },
-    capetown: { top: "65%", left: "52%" },
-    mumbai: { top: "45%", left: "65%" },
-    dubai: { top: "42%", left: "60%" },
-    istanbul: { top: "35%", left: "55%" },
-    moscow: { top: "25%", left: "58%" },
-    buenosaires: { top: "70%", left: "35%" },
-    vancouver: { top: "30%", left: "20%" }
+    paris: { top: "28%", left: "47%" },
+    tokyo: { top: "32%", left: "82%" },
+    cairo: { top: "38%", left: "54%" },
+    rio: { top: "62%", left: "33%" },
+    newyork: { top: "32%", left: "25%" },
+    sydney: { top: "68%", left: "85%" },
+    rome: { top: "32%", left: "50%" },
+    beijing: { top: "30%", left: "78%" },
+    marrakech: { top: "38%", left: "44%" },
+    capetown: { top: "68%", left: "52%" },
+    mumbai: { top: "42%", left: "65%" },
+    dubai: { top: "40%", left: "60%" },
+    istanbul: { top: "32%", left: "53%" },
+    moscow: { top: "24%", left: "56%" },
+    buenosaires: { top: "68%", left: "30%" },
+    vancouver: { top: "26%", left: "17%" }
   };
 
   return (
@@ -354,7 +455,7 @@ const Game = () => {
                   <Location 
                     name={locations.find(loc => loc.id === currentLocation)?.name || ""}
                     facts={locations.find(loc => loc.id === currentLocation)?.facts || []}
-                    onExplore={() => setCurrentLocation(null)}
+                    onExplore={() => openStreetView(currentLocation)}
                   />
                 </div>
               )}
@@ -375,7 +476,11 @@ const Game = () => {
                   {visitedLocations.map((locId) => {
                     const location = locations.find(loc => loc.id === locId);
                     return location ? (
-                      <div key={locId} className="bg-white/80 backdrop-blur-sm p-4 rounded-lg flex items-center space-x-3">
+                      <div 
+                        key={locId} 
+                        className="bg-white/80 backdrop-blur-sm p-4 rounded-lg flex items-center space-x-3 cursor-pointer hover:bg-white/95 transition-colors"
+                        onClick={() => openStreetView(locId)}
+                      >
                         <Award className="text-olivia-purple flex-shrink-0" />
                         <div>
                           <p className="font-medium">{location.name}</p>
@@ -397,6 +502,22 @@ const Game = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Street View Modal */}
+      <AnimatePresence>
+        {showStreetView && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <StreetView 
+              locationId={showStreetView}
+              onClose={closeStreetView}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Layout>
   );
 };
