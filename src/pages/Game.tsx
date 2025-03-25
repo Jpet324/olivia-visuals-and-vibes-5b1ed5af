@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCap, Map, Globe, Award } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 // Game character
@@ -204,6 +203,7 @@ const Game = () => {
   const [points, setPoints] = useState(0);
   const [visitedLocations, setVisitedLocations] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("map");
+  const [zoomedLocation, setZoomedLocation] = useState<string | null>(null);
 
   const handleExplore = (locationId: string) => {
     if (!visitedLocations.includes(locationId)) {
@@ -217,7 +217,18 @@ const Game = () => {
     setActiveTab("journey");
   };
 
-  // Create coordinates for each location (approximate)
+  const handleMarkerClick = (locationId: string) => {
+    setZoomedLocation(locationId);
+    
+    setTimeout(() => {
+      handleExplore(locationId);
+    }, 500);
+  };
+
+  const resetZoom = () => {
+    setZoomedLocation(null);
+  };
+
   const locationCoordinates = {
     paris: { top: "30%", left: "48%" },
     tokyo: { top: "35%", left: "80%" },
@@ -277,6 +288,27 @@ const Game = () => {
             
             <TabsContent value="map" className="space-y-4">
               <div className="relative h-64 md:h-96 bg-blue-50 rounded-xl overflow-hidden">
+                <AnimatePresence>
+                  {zoomedLocation ? (
+                    <motion.div 
+                      key="zoom-backdrop"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute inset-0 bg-black/40 z-10 flex items-center justify-center"
+                      onClick={resetZoom}
+                    >
+                      <motion.button
+                        className="absolute top-4 right-4 bg-white/80 text-sm font-medium px-2 py-1 rounded-full z-20"
+                        onClick={resetZoom}
+                      >
+                        Back to map
+                      </motion.button>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+                
                 <div className="absolute inset-0 flex items-center justify-center">
                   <img 
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1920px-Equirectangular_projection_SW.jpg" 
@@ -285,23 +317,39 @@ const Game = () => {
                   />
                 </div>
                 
-                {/* Clickable location markers */}
-                {Object.entries(locationCoordinates).map(([locationId, position]) => (
-                  <div 
-                    key={locationId}
-                    className="absolute" 
-                    style={{ top: position.top, left: position.left }}
-                  >
-                    <button 
-                      onClick={() => handleExplore(locationId)}
-                      className={`w-4 h-4 md:w-6 md:h-6 rounded-full bg-olivia-purple ${visitedLocations.includes(locationId) ? "ring-2 ring-olivia-pink animate-pulse" : ""} hover:ring-2 hover:ring-olivia-pink transition-all`} 
-                      title={locations.find(loc => loc.id === locationId)?.name || ""}
-                    ></button>
-                  </div>
-                ))}
+                {Object.entries(locationCoordinates).map(([locationId, position]) => {
+                  const isZoomed = zoomedLocation === locationId;
+                  
+                  return (
+                    <motion.div 
+                      key={locationId}
+                      className={`absolute z-20`}
+                      style={{ 
+                        top: position.top, 
+                        left: position.left,
+                      }}
+                      animate={isZoomed ? {
+                        scale: [1, 8],
+                        zIndex: 30,
+                      } : {
+                        scale: 1,
+                        zIndex: 20,
+                      }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <motion.button 
+                        onClick={() => handleMarkerClick(locationId)}
+                        className={`w-4 h-4 md:w-6 md:h-6 rounded-full bg-olivia-purple ${visitedLocations.includes(locationId) ? "ring-2 ring-olivia-pink animate-pulse" : ""} hover:ring-2 hover:ring-olivia-pink transition-all`} 
+                        title={locations.find(loc => loc.id === locationId)?.name || ""}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.9 }}
+                      ></motion.button>
+                    </motion.div>
+                  );
+                })}
               </div>
               
-              {currentLocation && (
+              {currentLocation && !zoomedLocation && (
                 <div className="mt-6 animate-fade-in">
                   <Location 
                     name={locations.find(loc => loc.id === currentLocation)?.name || ""}
