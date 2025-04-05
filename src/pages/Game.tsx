@@ -235,21 +235,21 @@ const realWorldAssets = [
   {
     id: "grand-canyon",
     name: "Grand Canyon",
-    type: "environment",
+    type: "environment" as const,
     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Grand_Canyon_view_from_Pima_Point_2010.jpg/1920px-Grand_Canyon_view_from_Pima_Point_2010.jpg",
     description: "Experience the breathtaking view of the Grand Canyon"
   },
   {
     id: "ancient-ruins",
     name: "Ancient Temple Ruins",
-    type: "texture",
+    type: "texture" as const,
     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Parthenon_from_west.jpg/1920px-Parthenon_from_west.jpg",
     description: "Explore ancient architecture with realistic stone textures"
   },
   {
     id: "wildlife",
     name: "Safari Wildlife",
-    type: "sprite",
+    type: "sprite" as const,
     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/1920px-Lion_waiting_in_Namibia.jpg",
     description: "Encounter wildlife from different continents"
   }
