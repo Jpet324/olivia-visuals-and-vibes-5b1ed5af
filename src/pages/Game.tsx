@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Map, Globe, Award, X } from "lucide-react";
+import { GraduationCap, Map, Globe, Award, X, Camera, Image } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import StreetViewScene from "../components/StreetViewScene";
+import RealWorldGraphics from "../components/RealWorldGraphics";
 
-// Game character
 const Character = () => (
   <motion.div 
     className="relative w-24 h-24"
@@ -24,7 +24,6 @@ const Character = () => (
   </motion.div>
 );
 
-// Street View component
 interface StreetViewProps {
   locationId: string;
   onClose: () => void;
@@ -59,7 +58,6 @@ const StreetView: React.FC<StreetViewProps> = ({ locationId, onClose }) => {
   );
 };
 
-// Location component
 interface LocationProps {
   name: string;
   facts: string[];
@@ -86,7 +84,6 @@ const Location: React.FC<LocationProps> = ({ name, facts, onExplore }) => (
   </div>
 );
 
-// Locations data
 const locations = [
   {
     id: "paris",
@@ -234,6 +231,116 @@ const locations = [
   }
 ];
 
+const realWorldAssets = [
+  {
+    id: "grand-canyon",
+    name: "Grand Canyon",
+    type: "environment",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Grand_Canyon_view_from_Pima_Point_2010.jpg/1920px-Grand_Canyon_view_from_Pima_Point_2010.jpg",
+    description: "Experience the breathtaking view of the Grand Canyon"
+  },
+  {
+    id: "ancient-ruins",
+    name: "Ancient Temple Ruins",
+    type: "texture",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Parthenon_from_west.jpg/1920px-Parthenon_from_west.jpg",
+    description: "Explore ancient architecture with realistic stone textures"
+  },
+  {
+    id: "wildlife",
+    name: "Safari Wildlife",
+    type: "sprite",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/1920px-Lion_waiting_in_Namibia.jpg",
+    description: "Encounter wildlife from different continents"
+  }
+];
+
+interface RealWorldAssetProps {
+  name: string;
+  imageUrl: string;
+  type: 'texture' | 'environment' | 'sprite' | 'model';
+  description: string;
+  onClick: () => void;
+}
+
+const RealWorldAsset: React.FC<RealWorldAssetProps> = ({ 
+  name, 
+  imageUrl, 
+  type, 
+  description, 
+  onClick 
+}) => (
+  <div 
+    className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"
+    onClick={onClick}
+  >
+    <div className="h-40 mb-4 rounded-md overflow-hidden bg-gray-200 relative">
+      <img 
+        src={imageUrl} 
+        alt={name} 
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute top-2 right-2 bg-olivia-purple/80 text-white text-xs px-2 py-1 rounded-full">
+        {type}
+      </div>
+    </div>
+    <h3 className="font-serif text-xl font-medium mb-2">{name}</h3>
+    <p className="text-sm text-muted-foreground mb-4">{description}</p>
+    <Button 
+      className="bg-olivia-purple hover:bg-olivia-darkPurple w-full"
+    >
+      <Camera className="mr-2 h-4 w-4" />
+      View in 3D
+    </Button>
+  </div>
+);
+
+interface RealWorldViewerProps {
+  asset: {
+    id: string;
+    name: string;
+    type: 'texture' | 'environment' | 'sprite' | 'model';
+    imageUrl: string;
+    description?: string;
+  };
+  onClose: () => void;
+}
+
+const RealWorldViewer: React.FC<RealWorldViewerProps> = ({ asset, onClose }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+      <div className="relative w-full max-w-4xl bg-white rounded-lg shadow-xl overflow-hidden">
+        <Button 
+          variant="ghost" 
+          className="absolute top-2 right-2 z-10" 
+          onClick={onClose}
+        >
+          <X className="h-5 w-5" />
+        </Button>
+        
+        <div className="aspect-video">
+          <RealWorldGraphics 
+            type={asset.type} 
+            imageUrl={asset.imageUrl}
+            position={[0, 0, 0]}
+            scale={asset.type === 'sprite' ? [3, 3, 1] : [2, 2, 2]}
+            rotation={[0, asset.type === 'texture' ? Math.PI / 4 : 0, 0]}
+          />
+        </div>
+        
+        <div className="p-4 bg-white">
+          <h3 className="font-serif text-xl font-bold">
+            {asset.name}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {asset.description || "Explore this real-world element in 3D"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Game = () => {
   const [currentLocation, setCurrentLocation] = useState<string | null>(null);
   const [points, setPoints] = useState(0);
@@ -241,6 +348,7 @@ const Game = () => {
   const [activeTab, setActiveTab] = useState("map");
   const [zoomedLocation, setZoomedLocation] = useState<string | null>(null);
   const [showStreetView, setShowStreetView] = useState<string | null>(null);
+  const [selectedRealWorldAsset, setSelectedRealWorldAsset] = useState<string | null>(null);
 
   const handleExplore = (locationId: string) => {
     if (!visitedLocations.includes(locationId)) {
@@ -272,6 +380,19 @@ const Game = () => {
 
   const closeStreetView = () => {
     setShowStreetView(null);
+  };
+
+  const openRealWorldAsset = (assetId: string) => {
+    setSelectedRealWorldAsset(assetId);
+    
+    if (!visitedLocations.includes(`rw-${assetId}`)) {
+      setPoints(prev => prev + 15);
+      setVisitedLocations(prev => [...prev, `rw-${assetId}`]);
+    }
+  };
+
+  const closeRealWorldAsset = () => {
+    setSelectedRealWorldAsset(null);
   };
 
   const locationCoordinates = {
@@ -320,7 +441,7 @@ const Game = () => {
           </p>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 mb-6">
+            <TabsList className="grid grid-cols-3 mb-6">
               <TabsTrigger value="map" className="flex items-center space-x-2">
                 <Map size={16} />
                 <span>World Map</span>
@@ -328,6 +449,10 @@ const Game = () => {
               <TabsTrigger value="journey" className="flex items-center space-x-2">
                 <Globe size={16} />
                 <span>Journey</span>
+              </TabsTrigger>
+              <TabsTrigger value="real-world" className="flex items-center space-x-2">
+                <Image size={16} />
+                <span>Real World</span>
               </TabsTrigger>
             </TabsList>
             
@@ -443,6 +568,51 @@ const Game = () => {
                 </div>
               )}
             </TabsContent>
+            
+            <TabsContent value="real-world" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {realWorldAssets.map((asset) => (
+                  <RealWorldAsset
+                    key={asset.id}
+                    name={asset.name}
+                    imageUrl={asset.imageUrl}
+                    type={asset.type}
+                    description={asset.description || ""}
+                    onClick={() => openRealWorldAsset(asset.id)}
+                  />
+                ))}
+              </div>
+              
+              {visitedLocations.filter(loc => loc.startsWith('rw-')).length > 0 && (
+                <div className="mt-6 p-4 bg-white/80 backdrop-blur-sm rounded-lg">
+                  <h3 className="font-serif text-xl font-medium mb-2">Real World Exploration</h3>
+                  <p className="text-sm mb-2">
+                    You've earned {visitedLocations.filter(loc => loc.startsWith('rw-')).length * 15} points by exploring real-world elements!
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {visitedLocations
+                      .filter(loc => loc.startsWith('rw-'))
+                      .map(loc => {
+                        const assetId = loc.replace('rw-', '');
+                        const asset = realWorldAssets.find(a => a.id === assetId);
+                        return asset ? (
+                          <Button 
+                            key={loc} 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => openRealWorldAsset(asset.id)}
+                            className="flex items-center"
+                          >
+                            <Award className="mr-1 h-3 w-3 text-olivia-purple" />
+                            {asset.name}
+                          </Button>
+                        ) : null;
+                      })
+                    }
+                  </div>
+                </div>
+              )}
+            </TabsContent>
           </Tabs>
         </div>
       </div>
@@ -457,6 +627,21 @@ const Game = () => {
             <StreetView 
               locationId={showStreetView}
               onClose={closeStreetView}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedRealWorldAsset && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <RealWorldViewer 
+              asset={realWorldAssets.find(asset => asset.id === selectedRealWorldAsset)!}
+              onClose={closeRealWorldAsset}
             />
           </motion.div>
         )}
