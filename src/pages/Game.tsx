@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -415,6 +414,10 @@ const Game = () => {
     vancouver: { top: "26%", left: "17%" }
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
   return (
     <Layout>
       <div className="max-w-5xl mx-auto pt-8 px-4">
@@ -441,7 +444,7 @@ const Game = () => {
             Join Olivia as she explores famous locations around the world! Learn interesting facts about each place and collect points on your educational journey.
           </p>
           
-          <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid grid-cols-3 mb-6">
               <TabsTrigger value="map" className="flex items-center space-x-2">
                 <Map size={16} />
