@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
@@ -440,7 +441,7 @@ const Game = () => {
             Join Olivia as she explores famous locations around the world! Learn interesting facts about each place and collect points on your educational journey.
           </p>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-3 mb-6">
               <TabsTrigger value="map" className="flex items-center space-x-2">
                 <Map size={16} />
@@ -542,7 +543,7 @@ const Game = () => {
               ) : (
                 <div className="space-y-4">
                   <h3 className="font-serif text-xl font-medium">Places You've Visited</h3>
-                  {visitedLocations.map((locId) => {
+                  {visitedLocations.filter(locId => !locId.startsWith('rw-')).map((locId) => {
                     const location = locations.find(loc => loc.id === locId);
                     return location ? (
                       <div 
@@ -559,7 +560,7 @@ const Game = () => {
                     ) : null;
                   })}
                   
-                  {visitedLocations.length === locations.length && (
+                  {visitedLocations.filter(locId => !locId.startsWith('rw-')).length === locations.length && (
                     <div className="mt-6 p-4 bg-olivia-lightPink/20 border border-olivia-pink rounded-lg text-center">
                       <h3 className="font-serif text-xl font-medium mb-2">Congratulations!</h3>
                       <p>You've visited all locations and earned {locations.length * 10} points!</p>
