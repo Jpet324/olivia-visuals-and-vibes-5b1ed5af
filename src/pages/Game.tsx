@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Map, Globe, Award, X, Camera, Image } from "lucide-react";
+import { GraduationCap, Map, Globe, Award, X, Camera, Image, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import StreetViewScene from "../components/StreetViewScene";
@@ -24,12 +25,12 @@ const Character = () => (
   </motion.div>
 );
 
-interface StreetViewProps {
+interface Location3DViewProps {
   locationId: string;
   onClose: () => void;
 }
 
-const StreetView: React.FC<StreetViewProps> = ({ locationId, onClose }) => {
+const Location3DView: React.FC<Location3DViewProps> = ({ locationId, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="relative w-full max-w-4xl bg-white rounded-lg shadow-xl overflow-hidden">
@@ -58,17 +59,20 @@ const StreetView: React.FC<StreetViewProps> = ({ locationId, onClose }) => {
   );
 };
 
-interface LocationProps {
-  name: string;
-  facts: string[];
+interface LocationCardProps {
+  location: {
+    id: string;
+    name: string;
+    facts: string[];
+  };
   onExplore: () => void;
 }
 
-const Location: React.FC<LocationProps> = ({ name, facts, onExplore }) => (
-  <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md">
-    <h3 className="font-serif text-xl font-medium mb-4">{name}</h3>
+const LocationCard: React.FC<LocationCardProps> = ({ location, onExplore }) => (
+  <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md hover:shadow-lg transition-all">
+    <h3 className="font-serif text-xl font-medium mb-4">{location.name}</h3>
     <ul className="mb-4 space-y-2">
-      {facts.map((fact, index) => (
+      {location.facts.map((fact, index) => (
         <li key={index} className="flex items-start">
           <GraduationCap className="text-olivia-purple mr-2 mt-1 flex-shrink-0" size={16} />
           <span>{fact}</span>
@@ -77,9 +81,10 @@ const Location: React.FC<LocationProps> = ({ name, facts, onExplore }) => (
     </ul>
     <Button 
       onClick={onExplore} 
-      className="bg-olivia-purple hover:bg-olivia-darkPurple"
+      className="bg-olivia-purple hover:bg-olivia-darkPurple w-full"
     >
-      Explore this location
+      <Compass className="mr-2 h-4 w-4" />
+      Explore in 3D
     </Button>
   </div>
 );
@@ -255,39 +260,37 @@ const realWorldAssets = [
   }
 ];
 
-interface RealWorldAssetProps {
-  name: string;
-  imageUrl: string;
-  type: 'texture' | 'environment' | 'sprite' | 'model';
-  description: string;
+interface RealWorldAssetCardProps {
+  asset: {
+    id: string;
+    name: string;
+    type: 'texture' | 'environment' | 'sprite' | 'model';
+    imageUrl: string;
+    description: string;
+  };
   onClick: () => void;
 }
 
-const RealWorldAsset: React.FC<RealWorldAssetProps> = ({ 
-  name, 
-  imageUrl, 
-  type, 
-  description, 
-  onClick 
-}) => (
+const RealWorldAssetCard: React.FC<RealWorldAssetCardProps> = ({ asset, onClick }) => (
   <div 
     className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"
     onClick={onClick}
   >
     <div className="h-40 mb-4 rounded-md overflow-hidden bg-gray-200 relative">
       <img 
-        src={imageUrl} 
-        alt={name} 
+        src={asset.imageUrl} 
+        alt={asset.name} 
         className="w-full h-full object-cover"
       />
       <div className="absolute top-2 right-2 bg-olivia-purple/80 text-white text-xs px-2 py-1 rounded-full">
-        {type}
+        {asset.type}
       </div>
     </div>
-    <h3 className="font-serif text-xl font-medium mb-2">{name}</h3>
-    <p className="text-sm text-muted-foreground mb-4">{description}</p>
+    <h3 className="font-serif text-xl font-medium mb-2">{asset.name}</h3>
+    <p className="text-sm text-muted-foreground mb-4">{asset.description}</p>
     <Button 
       className="bg-olivia-purple hover:bg-olivia-darkPurple w-full"
+      onClick={onClick}
     >
       <Camera className="mr-2 h-4 w-4" />
       View in 3D
@@ -295,7 +298,7 @@ const RealWorldAsset: React.FC<RealWorldAssetProps> = ({
   </div>
 );
 
-interface RealWorldViewerProps {
+interface RealWorld3DViewerProps {
   asset: {
     id: string;
     name: string;
@@ -306,7 +309,7 @@ interface RealWorldViewerProps {
   onClose: () => void;
 }
 
-const RealWorldViewer: React.FC<RealWorldViewerProps> = ({ asset, onClose }) => {
+const RealWorld3DViewer: React.FC<RealWorld3DViewerProps> = ({ asset, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="relative w-full max-w-4xl bg-white rounded-lg shadow-xl overflow-hidden">
@@ -342,48 +345,27 @@ const RealWorldViewer: React.FC<RealWorldViewerProps> = ({ asset, onClose }) => 
 };
 
 const Game = () => {
-  const [currentLocation, setCurrentLocation] = useState<string | null>(null);
   const [points, setPoints] = useState(0);
   const [visitedLocations, setVisitedLocations] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState("map");
-  const [zoomedLocation, setZoomedLocation] = useState<string | null>(null);
-  const [showStreetView, setShowStreetView] = useState<string | null>(null);
-  const [selectedRealWorldAsset, setSelectedRealWorldAsset] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("landmarks");
+  const [viewing3DLocation, setViewing3DLocation] = useState<string | null>(null);
+  const [viewing3DAsset, setViewing3DAsset] = useState<string | null>(null);
 
-  const handleExplore = (locationId: string) => {
+  const handleExploreLocation = (locationId: string) => {
+    setViewing3DLocation(locationId);
+    
     if (!visitedLocations.includes(locationId)) {
       setPoints(prev => prev + 10);
       setVisitedLocations(prev => [...prev, locationId]);
     }
-    setCurrentLocation(locationId);
   };
 
-  const handleJourneyClick = () => {
-    setActiveTab("journey");
+  const closeLocation3DView = () => {
+    setViewing3DLocation(null);
   };
 
-  const handleMarkerClick = (locationId: string) => {
-    setZoomedLocation(locationId);
-    
-    setTimeout(() => {
-      handleExplore(locationId);
-    }, 500);
-  };
-
-  const resetZoom = () => {
-    setZoomedLocation(null);
-  };
-
-  const openStreetView = (locationId: string) => {
-    setShowStreetView(locationId);
-  };
-
-  const closeStreetView = () => {
-    setShowStreetView(null);
-  };
-
-  const openRealWorldAsset = (assetId: string) => {
-    setSelectedRealWorldAsset(assetId);
+  const handleViewAsset = (assetId: string) => {
+    setViewing3DAsset(assetId);
     
     if (!visitedLocations.includes(`rw-${assetId}`)) {
       setPoints(prev => prev + 15);
@@ -391,27 +373,8 @@ const Game = () => {
     }
   };
 
-  const closeRealWorldAsset = () => {
-    setSelectedRealWorldAsset(null);
-  };
-
-  const locationCoordinates = {
-    paris: { top: "28%", left: "47%" },
-    tokyo: { top: "32%", left: "82%" },
-    cairo: { top: "38%", left: "54%" },
-    rio: { top: "62%", left: "33%" },
-    newyork: { top: "32%", left: "25%" },
-    sydney: { top: "68%", left: "85%" },
-    rome: { top: "32%", left: "50%" },
-    beijing: { top: "30%", left: "78%" },
-    marrakech: { top: "38%", left: "44%" },
-    capetown: { top: "68%", left: "52%" },
-    mumbai: { top: "42%", left: "65%" },
-    dubai: { top: "40%", left: "60%" },
-    istanbul: { top: "32%", left: "53%" },
-    moscow: { top: "24%", left: "56%" },
-    buenosaires: { top: "68%", left: "30%" },
-    vancouver: { top: "26%", left: "17%" }
+  const closeAsset3DView = () => {
+    setViewing3DAsset(null);
   };
 
   const handleTabChange = (value: string) => {
@@ -422,7 +385,7 @@ const Game = () => {
     <Layout>
       <div className="max-w-5xl mx-auto pt-8 px-4">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-center mb-6">
-          <span className="olivia-gradient-text">Olivia's World Adventure</span>
+          <span className="olivia-gradient-text">Olivia's 3D World Adventure</span>
         </h1>
         
         <div className="bg-gradient-to-br from-olivia-lightPurple/20 to-olivia-lightPink/20 p-6 rounded-2xl shadow-lg mb-8">
@@ -431,7 +394,7 @@ const Game = () => {
               <Character />
               <div>
                 <h2 className="font-serif text-xl">Detective Olivia</h2>
-                <p className="text-sm text-muted-foreground">Educational Explorer</p>
+                <p className="text-sm text-muted-foreground">3D Explorer</p>
               </div>
             </div>
             <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
@@ -441,157 +404,78 @@ const Game = () => {
           </div>
           
           <p className="mb-6 glass-card p-4 rounded-lg">
-            Join Olivia as she explores famous locations around the world! Learn interesting facts about each place and collect points on your educational journey.
+            Join Olivia as she explores famous 3D locations around the world! Learn interesting facts about each place and collect points on your immersive journey.
           </p>
           
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid grid-cols-3 mb-6">
-              <TabsTrigger value="map" className="flex items-center space-x-2">
-                <Map size={16} />
-                <span>World Map</span>
-              </TabsTrigger>
-              <TabsTrigger value="journey" className="flex items-center space-x-2">
+            <TabsList className="grid grid-cols-2 mb-6">
+              <TabsTrigger value="landmarks" className="flex items-center space-x-2">
                 <Globe size={16} />
-                <span>Journey</span>
+                <span>3D Landmarks</span>
               </TabsTrigger>
-              <TabsTrigger value="real-world" className="flex items-center space-x-2">
+              <TabsTrigger value="elements" className="flex items-center space-x-2">
                 <Image size={16} />
-                <span>Real World</span>
+                <span>3D Elements</span>
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="map" className="space-y-4">
-              <div className="relative h-64 md:h-96 bg-blue-50 rounded-xl overflow-hidden">
-                <AnimatePresence>
-                  {zoomedLocation ? (
-                    <motion.div 
-                      key="zoom-backdrop"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="absolute inset-0 bg-black/40 z-10 flex items-center justify-center"
-                      onClick={resetZoom}
-                    >
-                      <motion.button
-                        className="absolute top-4 right-4 bg-white/80 text-sm font-medium px-2 py-1 rounded-full z-20"
-                        onClick={resetZoom}
-                      >
-                        Back to map
-                      </motion.button>
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
-                
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <img 
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1920px-Equirectangular_projection_SW.jpg" 
-                    alt="World Map"
-                    className="w-full h-full object-cover opacity-70"
+            <TabsContent value="landmarks" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {locations.map((location) => (
+                  <LocationCard 
+                    key={location.id}
+                    location={location}
+                    onExplore={() => handleExploreLocation(location.id)}
                   />
-                </div>
-                
-                {Object.entries(locationCoordinates).map(([locationId, position]) => {
-                  const isZoomed = zoomedLocation === locationId;
-                  
-                  return (
-                    <motion.div 
-                      key={locationId}
-                      className={`absolute z-20`}
-                      style={{ 
-                        top: position.top, 
-                        left: position.left,
-                      }}
-                      animate={isZoomed ? {
-                        scale: [1, 8],
-                        zIndex: 30,
-                      } : {
-                        scale: 1,
-                        zIndex: 20,
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <motion.button 
-                        onClick={() => handleMarkerClick(locationId)}
-                        className={`w-4 h-4 md:w-6 md:h-6 rounded-full bg-olivia-purple ${visitedLocations.includes(locationId) ? "ring-2 ring-olivia-pink animate-pulse" : ""} hover:ring-2 hover:ring-olivia-pink transition-all`} 
-                        title={locations.find(loc => loc.id === locationId)?.name || ""}
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.9 }}
-                      ></motion.button>
-                    </motion.div>
-                  );
-                })}
+                ))}
               </div>
               
-              {currentLocation && !zoomedLocation && (
-                <div className="mt-6 animate-fade-in">
-                  <Location 
-                    name={locations.find(loc => loc.id === currentLocation)?.name || ""}
-                    facts={locations.find(loc => loc.id === currentLocation)?.facts || []}
-                    onExplore={() => openStreetView(currentLocation)}
-                  />
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="journey" className="space-y-4">
-              {visitedLocations.length === 0 ? (
-                <div className="text-center py-12">
-                  <GraduationCap size={48} className="mx-auto mb-4 text-olivia-purple/50" />
-                  <h3 className="text-xl font-medium mb-2">Your journey hasn't started yet!</h3>
-                  <p className="text-muted-foreground">
-                    Explore locations on the map to start your educational adventure
+              {visitedLocations.filter(loc => !loc.startsWith('rw-')).length > 0 && (
+                <div className="mt-8 p-4 bg-white/80 backdrop-blur-sm rounded-lg">
+                  <h3 className="font-serif text-xl font-medium mb-2">Your 3D Journey</h3>
+                  <p className="text-sm mb-3">
+                    You've explored {visitedLocations.filter(loc => !loc.startsWith('rw-')).length} out of {locations.length} landmarks!
                   </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <h3 className="font-serif text-xl font-medium">Places You've Visited</h3>
-                  {visitedLocations.filter(locId => !locId.startsWith('rw-')).map((locId) => {
-                    const location = locations.find(loc => loc.id === locId);
-                    return location ? (
-                      <div 
-                        key={locId} 
-                        className="bg-white/80 backdrop-blur-sm p-4 rounded-lg flex items-center space-x-3 cursor-pointer hover:bg-white/95 transition-colors"
-                        onClick={() => openStreetView(locId)}
-                      >
-                        <Award className="text-olivia-purple flex-shrink-0" />
-                        <div>
-                          <p className="font-medium">{location.name}</p>
-                          <p className="text-sm text-muted-foreground">+10 knowledge points</p>
-                        </div>
-                      </div>
-                    ) : null;
-                  })}
-                  
-                  {visitedLocations.filter(locId => !locId.startsWith('rw-')).length === locations.length && (
-                    <div className="mt-6 p-4 bg-olivia-lightPink/20 border border-olivia-pink rounded-lg text-center">
-                      <h3 className="font-serif text-xl font-medium mb-2">Congratulations!</h3>
-                      <p>You've visited all locations and earned {locations.length * 10} points!</p>
-                    </div>
-                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {visitedLocations
+                      .filter(loc => !loc.startsWith('rw-'))
+                      .map(locId => {
+                        const location = locations.find(loc => loc.id === locId);
+                        return location ? (
+                          <Button 
+                            key={locId} 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleExploreLocation(locId)}
+                            className="flex items-center"
+                          >
+                            <Award className="mr-1 h-3 w-3 text-olivia-purple" />
+                            {location.name}
+                          </Button>
+                        ) : null;
+                      })
+                    }
+                  </div>
                 </div>
               )}
             </TabsContent>
             
-            <TabsContent value="real-world" className="space-y-4">
+            <TabsContent value="elements" className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {realWorldAssets.map((asset) => (
-                  <RealWorldAsset
+                  <RealWorldAssetCard
                     key={asset.id}
-                    name={asset.name}
-                    imageUrl={asset.imageUrl}
-                    type={asset.type}
-                    description={asset.description || ""}
-                    onClick={() => openRealWorldAsset(asset.id)}
+                    asset={asset}
+                    onClick={() => handleViewAsset(asset.id)}
                   />
                 ))}
               </div>
               
               {visitedLocations.filter(loc => loc.startsWith('rw-')).length > 0 && (
                 <div className="mt-6 p-4 bg-white/80 backdrop-blur-sm rounded-lg">
-                  <h3 className="font-serif text-xl font-medium mb-2">Real World Exploration</h3>
+                  <h3 className="font-serif text-xl font-medium mb-2">3D Elements Discovered</h3>
                   <p className="text-sm mb-2">
-                    You've earned {visitedLocations.filter(loc => loc.startsWith('rw-')).length * 15} points by exploring real-world elements!
+                    You've earned {visitedLocations.filter(loc => loc.startsWith('rw-')).length * 15} points by exploring 3D elements!
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {visitedLocations
@@ -604,7 +488,7 @@ const Game = () => {
                             key={loc} 
                             variant="outline" 
                             size="sm"
-                            onClick={() => openRealWorldAsset(asset.id)}
+                            onClick={() => handleViewAsset(asset.id)}
                             className="flex items-center"
                           >
                             <Award className="mr-1 h-3 w-3 text-olivia-purple" />
@@ -622,30 +506,30 @@ const Game = () => {
       </div>
 
       <AnimatePresence>
-        {showStreetView && (
+        {viewing3DLocation && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <StreetView 
-              locationId={showStreetView}
-              onClose={closeStreetView}
+            <Location3DView 
+              locationId={viewing3DLocation}
+              onClose={closeLocation3DView}
             />
           </motion.div>
         )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedRealWorldAsset && (
+        {viewing3DAsset && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <RealWorldViewer 
-              asset={realWorldAssets.find(asset => asset.id === selectedRealWorldAsset)!}
-              onClose={closeRealWorldAsset}
+            <RealWorld3DViewer 
+              asset={realWorldAssets.find(asset => asset.id === viewing3DAsset)!}
+              onClose={closeAsset3DView}
             />
           </motion.div>
         )}
